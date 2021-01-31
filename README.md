@@ -1,12 +1,12 @@
-In this article we'll be creating a theme switcher using styled-components, context api and of course react.
+In this article, we'll be creating a theme switcher using styled-components, context API, and of course, react.
 
-Code Sand Box: [https://codesandbox.io/s/react-theme-swticher-hbgjc](https://codesandbox.io/s/react-theme-swticher-hbgjc)
+Live Example: [https://codesandbox.io/s/react-theme-swticher-hbgjc](https://codesandbox.io/s/react-theme-swticher-hbgjc)
 
 Github Repository: [https://github.com/holdmypotion/React-Theme-Swticher](https://github.com/holdmypotion/React-Theme-Swticher)
 
 # Setup
 
-Run the following commands
+Run the following commands to initiate a react app.
 
 ```css
 npx create-react-app theme-switcher
@@ -14,7 +14,7 @@ cd theme-switcher
 yarn add styled-components styled-normalize
 ```
 
-Thus, you have a react app powered with styled-components.
+Thus, you have a react app powered by styled-components.
 
 Now, In the src folder create
 
@@ -25,9 +25,9 @@ Now, In the src folder create
 
 The end structure should look something like this.
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ea2acdfd-bbd1-43b8-8bab-547f3392c169/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ea2acdfd-bbd1-43b8-8bab-547f3392c169/Untitled.png)
+![Component tree structure](https://dev-to-uploads.s3.amazonaws.com/i/3vwh06t5jmyg1qlhufn8.png)
 
-# Creating a context for current theme
+# Creating a context for current theme state
 
 Inside the globalContext.js file, paste the below code.
 
@@ -67,8 +67,9 @@ const GlobalContextProvider = (props) => {
 export default GlobalContextProvider;
 ```
 
-This code here creates a context with a state and state changing function.
-At the end, these two properties will be available to the components using the useContext() hook.
+The code above creates a context with a state and state changing function.
+
+In the end, properties mentioned in the value prop will be available to the components using the useContext() hook.
 
 ```jsx
 value={{
@@ -78,6 +79,7 @@ value={{
 ```
 
 Using the Context:
+Paste the code below into the index.js file.
 
 ```jsx
 // index.js
@@ -92,7 +94,7 @@ import GlobalContextProvider from "./context/globalContext";
 
 ReactDOM.render(
   <React.StrictMode>
-		{/* Wrapt the App component with the GlobalContextProvider
+		{/* Wrap the App component with the GlobalContextProvider
 				created in the previous code snippet */}
     <GlobalContextProvider>
       <App />
@@ -120,6 +122,7 @@ import { normalize } from "styled-normalize";
 
 import { GlobalContext } from "../context/globalContext";
 
+// 1.
 const GlobalStyle = createGlobalStyle`
   ${normalize}
 
@@ -139,6 +142,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+// 2.
 const Layout = ({ children }) => {
   const darkTheme = {
     background: "#111827",
@@ -154,7 +158,10 @@ const Layout = ({ children }) => {
     button: "#374151",
   };
 
+	// 3.
   const currentTheme = useContext(GlobalContext);
+
+	// 4.
   let theme;
   switch (currentTheme.theme) {
     case "dark":
@@ -180,14 +187,14 @@ export default Layout;
 
 Let's break it down
 
-1. The GlobalStyle constant defines base styles that are generally defined in index.css file.
-2. The component Layout has two constants, darkTheme and lightTheme and we'll be just creating a toggle button to switch between the two. Using the same strategy, you can create as many themes as you would like.
-3. Next we are fetching the currentTheme from the globalContext
-4. The switch case statement populates the "theme" variable which is later passes into the ThemeProvider component provided by styled-components.
+1. The GlobalStyle constant defines the base styles that are generally defined in index.css file.
+2. The Layout component has two constants, darkTheme and lightTheme and we'll be creating a toggle button to switch between the two. Using the same strategy, you can create as many themes as you would like.
+3. Next we are fetching the currentTheme from the globalContext.
+4. The switch case statement populates the "theme" variable which is later passed into the ThemeProvider component provided by styled-components.
 
 # Creating the styles for the home page
 
-I like to divide my styled-component on the bases of pages. As some of the styles are common among the pages, I also create a globalStyles.js file to define those.
+I like to divide my styled-components on the basis of pages. As some of the styles are common among the pages, I also create a globalStyles.js file to define those.
 
 ```jsx
 // globalStyles.js
@@ -225,7 +232,7 @@ export const Flex = styled.div`
 `;
 ```
 
-Page specific styles
+Page-specific styles
 
 ```jsx
 // homestyles.js
@@ -317,7 +324,7 @@ export const Content = styled.div`
 `;
 ```
 
-Now that we are done with creating our little styled-components. It is time to use them to create the final page
+Now that we are done creating our little styled-components. It is time to use them to create the final page
 
 # Home Page
 
@@ -341,6 +348,8 @@ import {
   Content,
 } from "../styles/homeStyles";
 const Home = () => {
+	
+	// 1.
   const { theme, themeSwitchHandler } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -352,7 +361,8 @@ const Home = () => {
       <NavBar>
         <Container fluid>
           <Flex center>
-            <SwitchButton>
+						{/* 2. */}
+            <SwtchButton>
               <input
                 type='checkbox'
                 onChange={() =>
@@ -399,7 +409,7 @@ Let's break it down:
 
 1. We are fetching our context from the globalContext using the useContext() hook.
 2. The "onChange" prop of the switch button toggles the theme between dark and light.
-(A better way would be to create separate button to call for different themes as we already have a switch-case statement to select the theme in the Layout.js file.)
+(A better way would be to create a separate button to call for different themes as we already have a switch-case statement to select the theme in the Layout.js file.)
 
 Finally, import this component into the App.js file
 
@@ -415,3 +425,14 @@ function App() {
 
 export default App;
 ```
+
+# Further Ideas
+
+This method of using the ThemeProvider component to set themes is not just limited to colors, as it is clearly visible that you can define any kind of styles, store them into a constant, and then pass it on as a theme.
+
+Be creative, think of some use cases where you can maybe pass different margins or padding or perhaps width. You could also pass different fonts, maybe create a website like [https://www.happyhues.co/](https://www.happyhues.co/)
+This is super fun, so surely give it a try.
+
+# Thank you so much for reading.
+
+I would love to hear your views. Be sure to comment below!
